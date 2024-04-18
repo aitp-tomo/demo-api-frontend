@@ -26,7 +26,7 @@ Amplify.configure({
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [content, setContent] = useState("");
-  const [ddos, setDdos] = useState(700);
+  const [dos, setDos] = useState(700);
 
   return (
     <Authenticator>
@@ -108,14 +108,14 @@ const App: React.FC = () => {
                 label="同時アクセス数"
                 min={0}
                 step={1}
-                value={ddos}
-                onChange={(e) => setDdos(Number(e.target.value))}
+                value={dos}
+                onChange={(e) => setDos(Number(e.target.value))}
               />
               <Button
                 colorTheme="error"
                 onClick={async () => {
                   const axiosInstance = await getAxiosInstance();
-                  for (let index = 0; index < ddos; index++) {
+                  for (let index = 0; index < dos; index++) {
                     axiosInstance.get("/messages");
                   }
                 }}
