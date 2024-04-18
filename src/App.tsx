@@ -13,6 +13,7 @@ import {
 } from "@aws-amplify/ui-react";
 import { Message } from "./model";
 import { getAxiosInstance } from "./axios";
+import { handleError } from "./utils";
 
 Amplify.configure({
   Auth: {
@@ -26,6 +27,7 @@ Amplify.configure({
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [content, setContent] = useState("");
+  const [detail, setDetail] = useState("");
   const [dos, setDos] = useState(700);
 
   return (
@@ -34,8 +36,8 @@ const App: React.FC = () => {
         <>
           {user && (
             <main>
-              <h1>Hello {user.username}</h1>
               <Button onClick={signOut}>Sign out</Button>
+              <br />
               <Button
                 onClick={async () => {
                   const axiosInstance = await getAxiosInstance();
@@ -51,37 +53,46 @@ const App: React.FC = () => {
               >
                 一覧取得
               </Button>
+              <br />
               <Table>
                 <TableHead>
-                  <TableRow as="th">ID</TableRow>
-                  <TableRow as="th">content</TableRow>
-                </TableHead>
-              </Table>
-              <TableBody>
-                {messages.map((message) => (
-                  <TableRow key={message.id}>
-                    <TableCell>{message.id}</TableCell>
-                    <TableCell>{message.content}</TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={async () => {
-                          const axiosInstance = await getAxiosInstance();
-                          axiosInstance
-                            .get("/messages", { params: { id: message.id } })
-                            .then((response) => {
-                              alert(JSON.stringify(response.data));
-                            })
-                            .catch((error: any) => {
-                              alert(JSON.stringify(error));
-                            });
-                        }}
-                      >
-                        詳細
-                      </Button>
-                    </TableCell>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>content</TableCell>
+                    <TableCell>詳細ボタン</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
+                </TableHead>
+                <TableBody>
+                  {messages.map((message) => (
+                    <TableRow key={message.id}>
+                      <TableCell>{message.id}</TableCell>
+                      <TableCell>{message.content}</TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={async () => {
+                            const axiosInstance = await getAxiosInstance();
+                            axiosInstance
+                              .get("/messages", { params: { id: message.id } })
+                              .then((response) => {
+                                setDetail(JSON.stringify(response.data[0]));
+                                setContent("");
+                              })
+                              .catch((error: any) => {
+                                handleError(error);
+                              });
+                          }}
+                        >
+                          詳細
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <br />
+              詳細表示:{" "}
+              {detail ||
+                "一覧に表示されたメッセージの「詳細」ボタンを押してください"}
               <br />
               <TextField
                 label="新しいメッセージ"
@@ -97,7 +108,7 @@ const App: React.FC = () => {
                       alert("送信完了しました。一覧取得を行なってください");
                     })
                     .catch((error: any) => {
-                      alert(JSON.stringify(error));
+                      handleError(error);
                     });
                 }}
               >
