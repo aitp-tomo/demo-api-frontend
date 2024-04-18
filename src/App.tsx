@@ -29,7 +29,7 @@ const App: React.FC = () => {
   const [dos, setDos] = useState(700);
 
   return (
-    <Authenticator>
+    <Authenticator loginMechanisms={["username", "email"]}>
       {({ signOut, user }) => (
         <>
           {user && (
