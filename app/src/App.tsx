@@ -18,6 +18,7 @@ import {
 import { Message } from "./model";
 import { getAxiosInstance } from "./axios";
 import { handleError } from "./utils";
+import { getCurrentUser } from "aws-amplify/auth";
 
 Amplify.configure({
   Auth: {
@@ -37,22 +38,26 @@ const App: React.FC = () => {
   const [trigger, setTrigger] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const axiosInstance = await getAxiosInstance();
-      axiosInstance
-        .get("/messages")
-        .then((response) => {
-          setMessages(response.data);
-        })
-        .catch((error: any) => {
-          alert(JSON.stringify(error));
-        })
-        .finally(() => {
-          setTimeout(() => {
-            setTrigger(!trigger);
-          }, 1000);
-        });
-    })();
+    getCurrentUser()
+      .then(async () => {
+        const axiosInstance = await getAxiosInstance();
+        axiosInstance
+          .get("/messages")
+          .then((response) => {
+            setMessages(response.data);
+          })
+          .catch((error: any) => {
+            alert(JSON.stringify(error));
+          });
+      })
+      .catch(() => {
+        // サインインしていない場合など
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setTrigger(!trigger);
+        }, 1000);
+      });
   }, [trigger]);
 
   return (
