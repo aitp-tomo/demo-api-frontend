@@ -36,6 +36,12 @@ Server: Docker Desktop 4.28.0 (139021)
 
 # 起動方法
 
+[./app/.env](./app/.env)ファイルに環境変数を以下の通りに記述します。
+
+- `REACT_APP_API_ROOT_URL`: REST API のエンドポイント URL
+- `REACT_APP_USER_POOL_CLIENT_ID`: ユーザープールクライアント ID
+- `REACT_APP_USER_POOL_ID`: ユーザープール ID
+
 以下コマンドを実行してください
 
 ```bash
